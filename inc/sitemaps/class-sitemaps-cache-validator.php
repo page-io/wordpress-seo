@@ -17,6 +17,9 @@ class WPSEO_Sitemaps_Cache_Validator {
 	/** The format which creates the key of the option that holds the type validation value */
 	const VALIDATION_TYPE_KEY_FORMAT = 'wpseo_sitemap_%s_cache_validator';
 
+	/** Name of the validation key suffix filter */
+	const VALIDATION_KEY_SUFFIX_FILTER = 'wpseo_sitemap_cache_validator_suffix';
+
 	/**
 	 * Get the cache key for a certain type and page
 	 *
@@ -214,10 +217,16 @@ class WPSEO_Sitemaps_Cache_Validator {
 	public static function get_validator_key( $type = '' ) {
 
 		if ( empty( $type ) ) {
-			return self::VALIDATION_GLOBAL_KEY;
+			$key = self::VALIDATION_GLOBAL_KEY;
+		}
+		else {
+			$key = sprintf( self::VALIDATION_TYPE_KEY_FORMAT, $type );
 		}
 
-		return sprintf( self::VALIDATION_TYPE_KEY_FORMAT, $type );
+		if ( has_filter( self::VALIDATION_KEY_SUFFIX_FILTER ) ) {
+			$key .= '_' . apply_filters(self::VALIDATION_KEY_SUFFIX_FILTER, '', $type );
+ 		}
+ 		return $key;
 	}
 
 	/**
